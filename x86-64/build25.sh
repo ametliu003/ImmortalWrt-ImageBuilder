@@ -59,8 +59,24 @@ PACKAGES="$PACKAGES openssh-sftp-server"
 
 # 文件管理器
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
+
+# PassWall 主包 + xray/sing-box/hysteria 内核 + 中文界面 (已配合 imm25.config =y)
+PACKAGES="$PACKAGES luci-app-passwall"
+PACKAGES="$PACKAGES luci-i18n-passwall-zh-cn"
+
+# HomeProxy + 中文界面 (已配合 imm25.config =y)
+PACKAGES="$PACKAGES luci-app-homeproxy"
+PACKAGES="$PACKAGES luci-i18n-homeproxy-zh-cn"
+
+# MWAN3 + 中文界面 (已配合 imm25.config =y)
+PACKAGES="$PACKAGES luci-app-mwan3"
+PACKAGES="$PACKAGES luci-i18n-mwan3-zh-cn"
+
+# OpenClash (已配合 imm25.config =y，触发内核下载)
+PACKAGES="$PACKAGES luci-app-openclash"
+
 # ======== shell/apk-custom-packages.sh =======
-# 合并imm仓库以外的第三方插件 暂时注释
+# 合并imm仓库以外的第三方插件 (Lucky 等)
 PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
 
 
