@@ -21,9 +21,14 @@ EOF
 echo "cat pppoe-settings"
 cat /home/build/immortalwrt/files/etc/config/pppoe-settings
 
-if [ -z "$CUSTOM_PACKAGES" ]; then
+if [ -z "$CUSTOM_PACKAGES" ] && [ "$INCLUDE_LUCKY" != "yes" ]; then
   echo "⚪️ 未选择 任何第三方软件包"
 else
+  # 如果选了 Lucky，加入其包名
+  if [ "$INCLUDE_LUCKY" = "yes" ]; then
+    echo "✅ 已选择 Lucky"
+    CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-lucky lucky luci-i18n-lucky-zh-cn"
+  fi
   # ============= 同步第三方插件库==============
   # 同步第三方软件仓库run/apk
   echo "🔄 正在同步第三方软件仓库 Cloning run file repo..."
@@ -60,23 +65,36 @@ PACKAGES="$PACKAGES openssh-sftp-server"
 # 文件管理器
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 
-# PassWall 主包 + xray/sing-box/hysteria 内核 + 中文界面 (已配合 imm25.config =y)
-PACKAGES="$PACKAGES luci-app-passwall"
-PACKAGES="$PACKAGES luci-i18n-passwall-zh-cn"
+# ========== 以下插件由 GitHub Actions 输入控制 yes/no ==========
+# PassWall + xray/sing-box/hysteria + 中文界面
+if [ "$INCLUDE_PASSWALL" = "yes" ]; then
+  echo "✅ 已选择 PassWall"
+  PACKAGES="$PACKAGES luci-app-passwall"
+  PACKAGES="$PACKAGES luci-i18n-passwall-zh-cn"
+fi
 
-# HomeProxy + 中文界面 (已配合 imm25.config =y)
-PACKAGES="$PACKAGES luci-app-homeproxy"
-PACKAGES="$PACKAGES luci-i18n-homeproxy-zh-cn"
+# HomeProxy + 中文界面
+if [ "$INCLUDE_HOMEPROXY" = "yes" ]; then
+  echo "✅ 已选择 HomeProxy"
+  PACKAGES="$PACKAGES luci-app-homeproxy"
+  PACKAGES="$PACKAGES luci-i18n-homeproxy-zh-cn"
+fi
 
-# MWAN3 + 中文界面 (已配合 imm25.config =y)
-PACKAGES="$PACKAGES luci-app-mwan3"
-PACKAGES="$PACKAGES luci-i18n-mwan3-zh-cn"
+# MWAN3 + 中文界面
+if [ "$INCLUDE_MWAN3" = "yes" ]; then
+  echo "✅ 已选择 MWAN3"
+  PACKAGES="$PACKAGES luci-app-mwan3"
+  PACKAGES="$PACKAGES luci-i18n-mwan3-zh-cn"
+fi
 
-# OpenClash (已配合 imm25.config =y，触发内核下载)
-PACKAGES="$PACKAGES luci-app-openclash"
+# OpenClash
+if [ "$INCLUDE_OPENCLASH" = "yes" ]; then
+  echo "✅ 已选择 luci-app-openclash"
+  PACKAGES="$PACKAGES luci-app-openclash"
+fi
 
 # ======== shell/apk-custom-packages.sh =======
-# 合并imm仓库以外的第三方插件 (Lucky 等)
+# 合并imm仓库以外的第三方插件
 PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
 
 

@@ -43,6 +43,48 @@ on:
         description: "宽带密码 (若启用PPPoE)"
         required: false
 
+      # ====== 插件选择 ======
+      include_passwall:
+        description: "是否编译 PassWall (含 xray/sing-box/hysteria)?"
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+        - 'yes'
+        - 'no'
+      include_openclash:
+        description: "是否编译 OpenClash?"
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+        - 'yes'
+        - 'no'
+      include_homeproxy:
+        description: "是否编译 HomeProxy?"
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+        - 'yes'
+        - 'no'
+      include_mwan3:
+        description: "是否编译 MWAN3 多线负载?"
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+        - 'yes'
+        - 'no'
+      include_lucky:
+        description: "是否编译 Lucky (DDNS/Stun/WebPanel)?"
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+        - 'yes'
+        - 'no'
+
 permissions:
   contents: write
 
@@ -92,6 +134,11 @@ jobs:
             -e ENABLE_PPPOE=${{ inputs.enable_pppoe }} \
             -e PPPOE_ACCOUNT=${{ inputs.pppoe_account }} \
             -e PPPOE_PASSWORD=${{ inputs.pppoe_password }} \
+            -e INCLUDE_PASSWALL=${{ inputs.include_passwall }} \
+            -e INCLUDE_OPENCLASH=${{ inputs.include_openclash }} \
+            -e INCLUDE_HOMEPROXY=${{ inputs.include_homeproxy }} \
+            -e INCLUDE_MWAN3=${{ inputs.include_mwan3 }} \
+            -e INCLUDE_LUCKY=${{ inputs.include_lucky }} \
           immortalwrt/imagebuilder:x86-64-openwrt-${luci_version} /bin/bash /home/build/immortalwrt/build.sh
           
 
@@ -102,17 +149,37 @@ jobs:
           <a href="https://wkdaily.cpolar.cn/archives/1">
            <img src="https://img.shields.io/badge/若下载慢可套用国内加速站下载-FC7C0D?logo=github&logoColor=fff&labelColor=000&style=for-the-badge"/>
           </a>
-          
+
           - 🏠 **后台地址**: ${{ github.event.inputs.custom_router_ip }}
           - 👤 **用户名**: root
           - 🔑 **密码**: 无
           EOF
 
+          # Docker
           if [ "${{ github.event.inputs.include_docker }}" == "yes" ]; then
-            extra_content="#### 默认带docker"
-            echo -e "\n$extra_content" >> ${{ github.workspace }}/router-info.md
+            echo "- 🐳 **Docker**: ✅" >> ${{ github.workspace }}/router-info.md
           else
-            echo -e "\n#### 不带docker" >> ${{ github.workspace }}/router-info.md
+            echo "- 🐳 **Docker**: ❌" >> ${{ github.workspace }}/router-info.md
+          fi
+          # PassWall
+          if [ "${{ github.event.inputs.include_passwall }}" == "yes" ]; then
+            echo "- 🔒 **PassWall** (xray+sing-box+hysteria): ✅" >> ${{ github.workspace }}/router-info.md
+          fi
+          # OpenClash
+          if [ "${{ github.event.inputs.include_openclash }}" == "yes" ]; then
+            echo "- ⚡ **OpenClash**: ✅" >> ${{ github.workspace }}/router-info.md
+          fi
+          # HomeProxy
+          if [ "${{ github.event.inputs.include_homeproxy }}" == "yes" ]; then
+            echo "- 🌐 **HomeProxy**: ✅" >> ${{ github.workspace }}/router-info.md
+          fi
+          # MWAN3
+          if [ "${{ github.event.inputs.include_mwan3 }}" == "yes" ]; then
+            echo "- 🔗 **MWAN3** (多线负载): ✅" >> ${{ github.workspace }}/router-info.md
+          fi
+          # Lucky
+          if [ "${{ github.event.inputs.include_lucky }}" == "yes" ]; then
+            echo "- 🍀 **Lucky** (DDNS/Stun): ✅" >> ${{ github.workspace }}/router-info.md
           fi
 
       - name: Upload ImmortWrt as release assets
